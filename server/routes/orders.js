@@ -3,6 +3,28 @@ const router = express.Router();
 const { getDB } = require('../db');
 const { ObjectId } = require('mongodb');
 
+// Get orders by email
+router.get('/email', async (req, res) => {
+    try {
+        const { email } = req.query;
+        
+        if (!email) {
+            return res.status(400).json({ error: 'Email is required' });
+        }
+        
+        const db = getDB();
+        const orders = await db.collection('orders')
+            .find({ email: email.toLowerCase() })
+            .sort({ createdAt: -1 }) // Sort by most recent first
+            .toArray();
+            
+        res.json({ orders });
+    } catch (error) {
+        console.error('Error fetching orders by email:', error);
+        res.status(500).json({ error: 'Failed to fetch orders' });
+    }
+});
+
 // Get all orders (protected route)
 router.get('/', async (req, res) => {
     try {

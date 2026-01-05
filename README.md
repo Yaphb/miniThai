@@ -2,7 +2,7 @@
 
 A modern Thai restaurant website with online ordering and reservations.
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 - Node.js 16+
@@ -12,7 +12,7 @@ A modern Thai restaurant website with online ordering and reservations.
 ### Local Development
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/miniThai.git
+   git clone https://github.com/Yaphb/miniThai.git
    cd miniThai
    ```
 
@@ -78,11 +78,66 @@ npm run build     # Build for production
 node server/scripts/seed_db.js  # Seed database
 ```
 
-## 📂 Project Structure
+## Screenshots
+
+| Home Page | Menu Page |
+|-----------|-----------|
+| ![Home Page](screenshots/index.jpg) | ![Menu Page](screenshots/menu.jpg) |
+
+| Cart | Checkout |
+|------|-----------|
+| ![Cart](screenshots/cart.jpg) | ![Checkout](screenshots/checkout.jpg) |
+
+| Orders | Contact |
+|--------|----------|
+| ![Orders](screenshots/orders.jpg) | ![Contact](screenshots/contact.jpg) |
+
+## MongoDB Atlas Setup
+
+1. **Quick Setup**
+   - Sign up at [MongoDB Atlas](https://www.mongodb.com/cloud/atlas/register)
+   - Create a free shared cluster
+   - Create yourself or anyone as the database user
+   - Get your know the connection string from "Connect" > "Connect your application" > "Drivers"
+
+2. **Configure & Run**
+   ```bash
+   # Update .env with your MongoDB URI
+   MONGODB_URI=your_mongodb_connection_string
+   
+   # Load sample data
+   node server/scripts/seed_db.js
+   ```
+
+3. **Check & Analyze**
+
+   **Database**: Start by logging into your MongoDB Atlas account and selecting your database cluster.
+   
+   **Data Explorer**: Navigate to the Data Explorer tab in Atlas to view and manage your databases and collections.
+   
+   **miniThai-db**: Locate and select your `miniThai-db` database from the list.
+   
+   **Connect**: Get your connection string from "Connect" > "Connect your application" > "Node.js".
+   
+   **Connect with Node.js**:
+   ```bash
+   # Install MongoDB Node.js driver if needed
+   npm install mongodb
+   ```
+   
+   **Load sample data**:
+   ```bash
+   node server/scripts/seed_db.js
+   ```
+   
+   This will connect to your database and display information about your collections and sample data.
+
+## Project Structure
 
 ```
 miniThai/
 ├── public/           # Static files
+├── screenshots/      # Screenshots
 ├── server/           # Backend code
 │   ├── data/         # Seed data
 │   ├── scripts/      # Database scripts

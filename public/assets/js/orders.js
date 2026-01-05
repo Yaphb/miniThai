@@ -173,10 +173,11 @@ if (typeof document !== 'undefined') {
       }
 
       try {
-        const response = await fetch(`/api/orders?email=${encodeURIComponent(email)}`)
+        const response = await fetch(`/api/orders/email?email=${encodeURIComponent(email)}`)
 
         if (!response.ok) {
-          throw new Error('Failed to fetch orders')
+          const errorData = await response.json().catch(() => ({}))
+          throw new Error(errorData.error || 'Failed to fetch orders')
         }
 
         const data = await response.json()
