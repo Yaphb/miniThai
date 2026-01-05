@@ -1,0 +1,178 @@
+{
+  "categories": [
+    "Appetizers",
+    "Soups",
+    "Curries",
+    "Stir-fry",
+    "Noodles",
+    "Desserts",
+    "Beverages"
+  ],
+  "items": [
+    {
+      "id": "1001",
+      "name": "Spring Rolls",
+      "category": "Appetizers",
+      "price": 6.95,
+      "description_en": "Crispy rolls with vegetables and glass noodles",
+      "description_th": "ปอเปี๊ยะผักกรอบ ไส้วุ้นเส้น",
+      "vegetarian": true,
+      "spicyLevel": 0,
+      "image": "assets/images/spring-rolls.jpg"
+    },
+    {
+      "id": "1002",
+      "name": "Chicken Satay",
+      "category": "Appetizers",
+      "price": 8.95,
+      "description_en": "Grilled marinated chicken with peanut sauce",
+      "description_th": "ไก่สะเต๊ะ เสิร์มพร้อมน้ำจิ้มถั่ว",
+      "vegetarian": false,
+      "spicyLevel": 1,
+      "image": "assets/images/chicken-satay.jpg"
+    },
+    {
+      "id": "1003",
+      "name": "Tom Yum Soup",
+      "category": "Soups",
+      "price": 9.95,
+      "description_en": "Spicy and sour soup with shrimp and herbs",
+      "description_th": "ต้มยำกุ้ง รสเผ็ดเปรี้ยว หอมสมุนไพร",
+      "vegetarian": false,
+      "spicyLevel": 3,
+      "image": "assets/images/tom-yum.jpg"
+    },
+    {
+      "id": "1004",
+      "name": "Tom Kha Soup",
+      "category": "Soups",
+      "price": 9.95,
+      "description_en": "Coconut soup with chicken and galangal",
+      "description_th": "ต้มข่าไก่ ซุปกะทิหอมข่า",
+      "vegetarian": false,
+      "spicyLevel": 1,
+      "image": "assets/images/tom-kha.jpg"
+    },
+    {
+      "id": "1005",
+      "name": "Green Curry",
+      "category": "Curries",
+      "price": 12.95,
+      "description_en": "Green curry with chicken, eggplant, basil",
+      "description_th": "แกงเขียวหวานไก่ มะเขือ โหระพา",
+      "vegetarian": false,
+      "spicyLevel": 3,
+      "image": "assets/images/green-curry.jpg"
+    },
+    {
+      "id": "1006",
+      "name": "Panang Curry",
+      "category": "Curries",
+      "price": 12.95,
+      "description_en": "Panang curry with beef and kaffir lime",
+      "description_th": "พะแนงเนื้อ โรยผิวมะกรูด",
+      "vegetarian": false,
+      "spicyLevel": 2,
+      "image": "assets/images/panang-curry.jpg"
+    },
+    {
+      "id": "1007",
+      "name": "Pad Kra Pao",
+      "category": "Stir-fry",
+      "price": 11.95,
+      "description_en": "Stir-fried minced pork with holy basil",
+      "description_th": "ผัดกะเพรา หมูสับ",
+      "vegetarian": false,
+      "spicyLevel": 3,
+      "image": "assets/images/pad-kra-pao.jpg"
+    },
+    {
+      "id": "1008",
+      "name": "Pad Thai",
+      "category": "Noodles",
+      "price": 11.95,
+      "description_en": "Stir-fried rice noodles with shrimp and tamarind",
+      "description_th": "ผัดไทยกุ้ง รสซอสมะขาม",
+      "vegetarian": false,
+      "spicyLevel": 1,
+      "image": "assets/images/pad-thai.jpg"
+    },
+    {
+      "id": "1009",
+      "name": "Pad See Ew",
+      "category": "Noodles",
+      "price": 10.95,
+      "description_en": "Stir-fried wide noodles with soy sauce",
+      "description_th": "ผัดซีอิ๊ว เส้นใหญ่",
+      "vegetarian": true,
+      "spicyLevel": 0,
+      "image": "assets/images/pad-see-ew.jpg"
+    },
+    {
+      "id": "1010",
+      "name": "Som Tam",
+      "category": "Appetizers",
+      "price": 8.95,
+      "description_en": "Green papaya salad with lime and chili",
+      "description_th": "ส้มตำไทย มะละกอ พริก มะนาว",
+      "vegetarian": true,
+      "spicyLevel": 3,
+      "image": "assets/images/som-tam.jpg"
+    },
+    {
+      "id": "1011",
+      "name": "Massaman Curry",
+      "category": "Curries",
+      "price": 12.95,
+      "description_en": "Massaman curry with potatoes and peanuts",
+      "description_th": "แกงมัสมั่น มันฝรั่ง ถั่วลิสง",
+      "vegetarian": false,
+      "spicyLevel": 1,
+      "image": "assets/images/massaman.jpg"
+    },
+    {
+      "id": "1012",
+      "name": "Mango Sticky Rice",
+      "category": "Desserts",
+      "price": 7.95,
+      "description_en": "Sweet sticky rice with ripe mango",
+      "description_th": "ข้าวเหนียวมะม่วง",
+      "vegetarian": true,
+      "spicyLevel": 0,
+      "image": "assets/images/mango-sticky-rice.jpg"
+    },
+    {
+      "id": "1013",
+      "name": "Thai Iced Tea",
+      "category": "Beverages",
+      "price": 4.95,
+      "description_en": "Sweet black tea with milk and ice",
+      "description_th": "ชาไทยเย็น",
+      "vegetarian": true,
+      "spicyLevel": 0,
+      "image": "assets/images/thai-iced-tea.jpg"
+    },
+    {
+      "id": "1014",
+      "name": "Pad King",
+      "category": "Stir-fry",
+      "price": 11.95,
+      "description_en": "Stir-fry with ginger and mushrooms",
+      "description_th": "ผัดขิง เห็ด",
+      "vegetarian": true,
+      "spicyLevel": 1,
+      "image": "assets/images/pad-king.jpg"
+    },
+    {
+      "id": "1015",
+      "name": "Boat Noodles",
+      "category": "Noodles",
+      "price": 12.95,
+      "description_en": "Rich broth noodles with beef and herbs",
+      "description_th": "ก๋วยเตี๋ยวเรือ เนื้อ น้ำซุปเข้มข้น",
+      "vegetarian": false,
+      "spicyLevel": 2,
+      "image": "assets/images/boat-noodles.jpg"
+    }
+  ]
+}

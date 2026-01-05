@@ -1,0 +1,102 @@
+<!-- Site Header Component -->
+<header class="site-header">
+  <div class="container">
+    <a href="/" class="logo" aria-label="miniThai Home">miniThai</a>
+    <nav class="nav" aria-label="Main Navigation">
+      <a href="/menu.html">Menu</a>
+      <a href="/cart.html" class="cart-link" style="position: relative;">
+        <span class="cart-text">Cart</span>
+        <span id="cart-count" class="cart-badge" style="display: none;">0</span>
+      </a>
+      <a href="/orders.html">Orders</a>
+      <a href="/contact.html">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<script>
+// Header cart badge initialization
+(function() {
+  'use strict';
+  
+  console.log('[Header] Component loaded, initializing cart badge...');
+  
+  // Function to update the badge immediately
+  function updateBadgeNow() {
+    const badge = document.getElementById('cart-count');
+    if (badge && window.cart) {
+      const count = window.cart.getCount();
+      badge.textContent = count;
+      badge.style.display = count > 0 ? 'inline-flex' : 'none';
+      console.log('[Header] Badge updated with count:', count);
+    }
+  }
+  
+  // Initialize badge with multiple fallback methods
+  function initBadge() {
+    // Method 1: Direct update if cart is available
+    if (window.cart) {
+      updateBadgeNow();
+      
+      // Subscribe to cart changes
+      window.cart.subscribe(() => {
+        updateBadgeNow();
+      });
+      
+      console.log('[Header] Badge initialized directly');
+      return;
+    }
+    
+    // Method 2: Use global initializer if available
+    if (window.initializeCartBadge) {
+      window.initializeCartBadge();
+      console.log('[Header] Badge initialized via global function');
+      return;
+    }
+    
+    // Method 3: Wait for cart to become available
+    let attempts = 0;
+    const maxAttempts = 50; // 5 seconds max
+    
+    const checkForCart = () => {
+      attempts++;
+      
+      if (window.cart) {
+        updateBadgeNow();
+        
+        // Subscribe to cart changes
+        window.cart.subscribe(() => {
+          updateBadgeNow();
+        });
+        
+        console.log('[Header] Badge initialized after', attempts, 'attempts');
+      } else if (attempts < maxAttempts) {
+        setTimeout(checkForCart, 100);
+      } else {
+        console.warn('[Header] Failed to initialize cart badge after', maxAttempts, 'attempts');
+      }
+    };
+    
+    checkForCart();
+  }
+  
+  // Initialize immediately
+  initBadge();
+  
+  // Also initialize after a short delay to catch late-loading cart
+  setTimeout(initBadge, 200);
+  
+  // Listen for page visibility changes to update badge
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) {
+      setTimeout(updateBadgeNow, 100);
+    }
+  });
+  
+  // Listen for focus events to update badge
+  window.addEventListener('focus', () => {
+    setTimeout(updateBadgeNow, 100);
+  });
+  
+})();
+</script>

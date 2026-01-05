@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Browse our authentic Thai menu with detailed descriptions and prices">
+  <title>miniThai | Menu</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link rel="stylesheet" href="/assets/css/main.css">
+</head>
+<body>
+  <!-- Header Component -->
+  <div data-component="header"></div>
+
+  <main>
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="hero-content">
+        <h1>Menu</h1>
+        <p>Discover our carefully curated selection of authentic Thai dishes</p>
+      </div>
+    </section>
+
+    <!-- Menu Content -->
+    <section class="container">
+      <!-- Enhanced Filters -->
+      <div class="filters-container">
+        <div class="filters glass-card" aria-label="Filter Options">
+          <div class="filter-group">
+            <label for="searchInput" class="filter-label">Search</label>
+            <div class="search-wrapper">
+              <i class="fas fa-search search-icon"></i>
+              <input type="text" id="searchInput" class="search-input" placeholder="Search dishes, ingredients..." aria-label="Search Menu Items">
+              <button type="button" id="clearSearch" class="clear-btn" style="display: none;">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="filter-group">
+            <label for="categoryFilter" class="filter-label">Category</label>
+            <select id="categoryFilter" aria-label="Select Category"></select>
+          </div>
+
+          <div class="filter-group">
+            <label for="dietFilter" class="filter-label">Diet</label>
+            <select id="dietFilter" aria-label="Select Diet Type">
+              <option value="all">All Diets</option>
+              <option value="vegetarian">🌿 Vegetarian</option>
+              <option value="non-vegetarian">🍖 Non-Vegetarian</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label for="spiceFilter" class="filter-label">Spice Level</label>
+            <select id="spiceFilter" aria-label="Select Spice Level">
+              <option value="all">Any Spice Level</option>
+              <option value="0">🌶️ Mild</option>
+              <option value="1">🌶️🌶️ Medium</option>
+              <option value="2">🌶️🌶️🌶️ Hot</option>
+              <option value="3">🌶️🌶️🌶️🌶️ Very Hot</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label for="sortFilter" class="filter-label">Sort By</label>
+            <select id="sortFilter" aria-label="Sort Menu Items">
+              <option value="name">Name (A-Z)</option>
+              <option value="name-desc">Name (Z-A)</option>
+              <option value="price">Price (Low to High)</option>
+              <option value="price-desc">Price (High to Low)</option>
+              <option value="category">Category</option>
+              <option value="spice">Spice Level</option>
+            </select>
+          </div>
+
+          <div class="filter-actions">
+            <button type="button" id="resetFilters" class="btn-reset" title="Reset Filters">
+              <i class="fas fa-undo"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Menu Grid -->
+      <div id="menuGrid" class="menu-grid grid-view" role="region" aria-live="polite" aria-label="Menu Items"></div>
+
+      <!-- Enhanced Pagination Controls -->
+      <div id="menuPagination" class="simple-pagination" style="display: none;">
+        <div class="pagination-info">
+          <span id="resultsInfo">Showing 1-6 of 24 items</span>
+        </div>
+        
+        <div class="pagination-nav">
+          <button id="prevPage" class="pagination-btn" title="Previous Page">
+            <i class="fas fa-chevron-left"></i>
+          </button>
+          
+          <div class="page-numbers" id="pageNumbers"></div>
+          
+          <button id="nextPage" class="pagination-btn" title="Next Page">
+            <i class="fas fa-chevron-right"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Loading State -->
+      <div id="menuLoading" class="loading-state" style="display: none;">
+        <div class="loading-spinner"></div>
+        <p>Loading delicious dishes...</p>
+      </div>
+
+      <!-- Status Message -->
+      <div id="menuStatus" class="status" role="alert" aria-live="assertive"></div>
+    </section>
+  </main>
+
+  <!-- Footer Component -->
+  <div data-component="footer"></div>
+
+  <script src="/assets/js/main.js"></script>
+  <script src="/assets/js/cart.js"></script>
+  <script src="/assets/js/cart-badge.js"></script>
+  <script src="/assets/js/transitions.js"></script>
+  <script type="module" src="/assets/js/components.js"></script>
+  <script src="/assets/js/menu.js"></script>
+</body>
+</html>

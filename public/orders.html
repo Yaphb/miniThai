@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Track your miniThai orders">
+  <title>miniThai | Order Tracking</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link rel="stylesheet" href="/assets/css/main.css">
+</head>
+<body>
+  <!-- Header Component -->
+  <div data-component="header"></div>
+
+  <main>
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="hero-content">
+        <h1>Track Your Orders</h1>
+        <p>Enter your email to view order history and status</p>
+      </div>
+    </section>
+
+    <!-- Orders Content -->
+    <section class="container">
+      <!-- Search Section -->
+      <div class="glass-card">
+        <form class="search-form" id="searchForm">
+          <input 
+            type="email" 
+            id="searchEmail" 
+            placeholder="Enter your email" 
+            required
+            aria-label="Email to search orders">
+          <button type="submit" class="btn">Search Orders</button>
+        </form>
+      </div>
+
+      <!-- Orders List -->
+      <div id="ordersContainer" class="orders-list">
+        <div class="empty-orders">
+          <h2>No Orders Yet</h2>
+          <p class="text-muted">Enter your email above to view your orders</p>
+          <a href="/menu.html" class="btn mt-medium">Start Ordering</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer Component -->
+  <div data-component="footer"></div>
+
+  <script type="module" src="/assets/js/main.js"></script>
+  <script type="module" src="/assets/js/components.js"></script>
+  <script src="/assets/js/transitions.js"></script>
+  <script src="/assets/js/orders.js"></script>
+  <script src="/assets/js/cart.js"></script>
+  <script src="/assets/js/cart-badge.js"></script>
+</body>
+</html>

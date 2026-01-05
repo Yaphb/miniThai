@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Contact miniThai and make a reservation for an authentic Thai dining experience">
+  <title>miniThai | Contact & Reservation</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link rel="stylesheet" href="/assets/css/main.css">
+</head>
+<body>
+  <!-- Header Component -->
+  <div data-component="header"></div>
+
+  <main>
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="hero-content">
+        <h1>Get In Touch</h1>
+        <p>Have questions or want to make a reservation? We'd love to hear from you.</p>
+      </div>
+    </section>
+
+    <!-- Contact Forms -->
+    <section class="container">
+      <div class="grid two">
+        <!-- Contact Form -->
+        <div class="glass-card">
+          <h2>Send us a Message</h2>
+          <form id="contactForm" novalidate>
+            <div class="field">
+              <label for="contact-name">Full Name *</label>
+              <input 
+                class="input" 
+                id="contact-name"
+                type="text" 
+                name="name" 
+                placeholder="Your full name" 
+                required 
+                aria-required="true">
+              <small class="error-msg" style="display:none;color:var(--error)"></small>
+            </div>
+
+            <div class="field">
+              <label for="contact-email">Email Address *</label>
+              <input 
+                class="input" 
+                id="contact-email"
+                type="email" 
+                name="email" 
+                placeholder="name@example.com" 
+                required 
+                aria-required="true">
+              <small class="error-msg" style="display:none;color:var(--error)"></small>
+            </div>
+
+            <div class="field">
+              <label for="contact-message">Message *</label>
+              <textarea 
+                class="input" 
+                id="contact-message"
+                name="message" 
+                placeholder="Tell us what's on your mind..." 
+                required 
+                aria-required="true"></textarea>
+              <small class="error-msg" style="display:none;color:var(--error)"></small>
+            </div>
+
+            <button type="submit" class="btn btn-block">Send Message</button>
+          </form>
+        </div>
+
+        <!-- Reservation Form -->
+        <div class="glass-card">
+          <h2>Make a Reservation</h2>
+          <form id="reservationForm" novalidate>
+            <div class="field">
+              <label for="res-name">Full Name *</label>
+              <input 
+                class="input" 
+                id="res-name"
+                type="text" 
+                name="name" 
+                placeholder="Your full name" 
+                required 
+                aria-required="true">
+              <small class="error-msg" style="display:none;color:var(--error)"></small>
+            </div>
+
+            <div class="field">
+              <label for="res-email">Email Address *</label>
+              <input 
+                class="input" 
+                id="res-email"
+                type="email" 
+                name="email" 
+                placeholder="name@example.com" 
+                required 
+                aria-required="true">
+              <small class="error-msg" style="display:none;color:var(--error)"></small>
+            </div>
+
+            <div class="field">
+              <label for="res-phone">Phone Number *</label>
+              <input 
+                class="input" 
+                id="res-phone"
+                type="tel" 
+                name="phone" 
+                placeholder="(+66) 099-999-9999" 
+                required 
+                aria-required="true">
+              <small class="error-msg" style="display:none;color:var(--error)"></small>
+            </div>
+
+            <div class="field">
+              <label for="res-date">Date *</label>
+              <input 
+                class="input" 
+                id="res-date"
+                type="date" 
+                name="date" 
+                required 
+                aria-required="true">
+              <small class="error-msg" style="display:none;color:var(--error)"></small>
+            </div>
+
+            <div class="field">
+              <label for="res-time">Time *</label>
+              <input 
+                class="input" 
+                id="res-time"
+                type="time" 
+                name="time" 
+                required 
+                aria-required="true">
+              <small class="error-msg" style="display:none;color:var(--error)"></small>
+            </div>
+
+            <div class="field">
+              <label for="res-party">Number of Guests *</label>
+              <input 
+                class="input" 
+                id="res-party"
+                type="number" 
+                name="partySize" 
+                min="1" 
+                max="20"
+                placeholder="1" 
+                required 
+                aria-required="true">
+              <small class="error-msg" style="display:none;color:var(--error)"></small>
+            </div>
+
+            <button type="submit" class="btn btn-block">Reserve Table</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Status Message -->
+      <div id="status" class="status" role="alert" aria-live="assertive"></div>
+    </section>
+  </main>
+
+  <!-- Footer Component -->
+  <div data-component="footer"></div>
+
+  <script type="module" src="/assets/js/main.js"></script>
+  <script type="module" src="/assets/js/components.js"></script>
+  <script src="/assets/js/transitions.js"></script>
+  <script src="/assets/js/cart.js"></script>
+  <script src="/assets/js/cart-badge.js"></script>
+  <script src="/assets/js/contact.js"></script>
+</body>
+</html>

@@ -1,0 +1,25 @@
+{
+  "team": [
+    {
+      "name": "Chef Niran",
+      "role": "Head Chef",
+      "bio_en": "Born in Chiang Mai, trained in Bangkok, specializes in Northern Thai cuisine.",
+      "bio_th": "เกิดเชียงใหม่ ฝึกในกรุงเทพฯ เชี่ยวชาญอาหารเหนือ",
+      "photo": "assets/images/staff-niran.jpg"
+    },
+    {
+      "name": "Chef Mali",
+      "role": "Pastry Chef",
+      "bio_en": "Creates Thai desserts with seasonal fruits and coconut.",
+      "bio_th": "ทำของหวานไทย ใช้ผลไม้ตามฤดูกาลและมะพร้าว",
+      "photo": "assets/images/staff-mali.jpg"
+    },
+    {
+      "name": "Somchai",
+      "role": "Manager",
+      "bio_en": "Ensures warm hospitality and smooth service.",
+      "bio_th": "ดูแลการบริการและความประทับใจลูกค้า",
+      "photo": "assets/images/staff-somchai.jpg"
+    }
+  ]
+}
