@@ -6,7 +6,56 @@
 (function () {
   'use strict';
 
+  // --- Checkout Pagination State ---
+  let checkoutSummaryState = {
+    currentPage: 1,
+    itemsPerPage: 4,
+    totalItems: 0
+  };
+
   // --- Utility Functions ---
+
+  // Get emoji for menu item
+  function getItemEmoji(name) {
+    const emojiMap = {
+      'tom yum': '🍲',
+      'pad thai': '🍜',
+      'green curry': '🍛',
+      'mango sticky rice': '🥭',
+      'spring roll': '🌯',
+      'papaya salad': '🥗',
+      'som tam': '🥗',
+      'thai iced tea': '🧋',
+      'coconut': '🥥',
+      'chicken': '🍗',
+      'beef': '🥩',
+      'pork': '🐖',
+      'shrimp': '🍤',
+      'fish': '🐟',
+      'rice': '🍚',
+      'noodle': '🍜',
+      'soup': '🥣',
+      'salad': '🥗',
+      'dessert': '🍧',
+      'drink': '🥤',
+      'beer': '🍺',
+      'wine': '🍷',
+      'cocktail': '🍹',
+      'massaman': '🍛',
+      'pad see ew': '🍜',
+      'curry': '🍲',
+      'pad': '🍤',
+      'tom': '🥣'
+    };
+
+    name = name.toLowerCase();
+    for (const [key, emoji] of Object.entries(emojiMap)) {
+      if (name.includes(key)) {
+        return emoji;
+      }
+    }
+    return '🍽️'; // Default emoji
+  }
 
   // Format price
   function formatPrice(amount) {
@@ -24,8 +73,6 @@
       return 'RM' + parseFloat(amount).toFixed(2);
     }
   }
-
-  // Show status message
   function showStatus(message, type = 'success') {
     const statusEl = document.getElementById('statusMessage');
     if (!statusEl) return;
@@ -106,31 +153,89 @@
 
     if (window.cart.isEmpty()) {
       container.innerHTML = `
-        <div style="text-align: center; padding: 20px;">
+        <div class="empty-order">
           <p>Your cart is empty.</p>
           <a href="/menu.html" class="btn" style="margin-top: 10px;">Browse Menu</a>
         </div>
       `;
-      // Start hiding form if empty
+      // Hide form if empty
       const formDiv = document.querySelector('.cart-summary');
       if (formDiv) formDiv.style.opacity = '0.5';
+      updateCheckoutPagination();
       return;
     }
 
     const items = window.cart.getItems();
-    container.innerHTML = items.map(item => `
-      <div class="checkout-item">
-        <div class="checkout-item-details">
-          <strong>${item.name}</strong>
-          <small>Quantity: ${item.quantity}</small>
+    checkoutSummaryState.totalItems = items.length;
+
+    // Calculate pagination
+    const start = (checkoutSummaryState.currentPage - 1) * checkoutSummaryState.itemsPerPage;
+    const end = start + checkoutSummaryState.itemsPerPage;
+    const pageItems = items.slice(start, end);
+
+    container.innerHTML = pageItems.map(item => {
+      const emoji = getItemEmoji(item.name);
+      const fallbackClass = !item.image ? 'fallback-emoji' : '';
+
+      return `
+        <div class="checkout-item">
+          <div class="checkout-item-image ${fallbackClass}">
+            ${item.image ? `<img src="/${item.image}" alt="${item.name}" onerror="this.parentElement.classList.add('fallback-emoji'); this.style.display='none';">` : ''}
+            <div class="item-emoji" style="display: ${item.image ? 'none' : 'flex'}; align-items: center; justify-content: center;">${emoji}</div>
+          </div>
+          <div class="checkout-item-details">
+            <strong>${item.name}</strong>
+            <small>Quantity: <span style="font-weight: bold; color: #d4af37;">${item.quantity}</span></small>
+          </div>
+          <div class="checkout-item-price">
+            ${formatPrice(item.price * item.quantity)}
+          </div>
         </div>
-        <div class="checkout-item-price">
-          ${formatPrice(item.price * item.quantity)}
-        </div>
-      </div>
-    `).join('');
+      `;
+    }).join('');
+
+    // Update item count badge
+    const badge = document.getElementById('summaryItemCount');
+    if (badge) {
+      badge.textContent = `${checkoutSummaryState.totalItems} ${checkoutSummaryState.totalItems === 1 ? 'Item' : 'Items'}`;
+    }
 
     updateSummary();
+    updateCheckoutPagination();
+  }
+
+  // Update checkout summary pagination
+  function updateCheckoutPagination() {
+    const totalPages = Math.ceil(checkoutSummaryState.totalItems / checkoutSummaryState.itemsPerPage);
+    const paginationDiv = document.getElementById('checkoutSummaryPagination');
+
+    if (!paginationDiv) return;
+
+    if (totalPages > 1) {
+      paginationDiv.style.display = 'flex';
+
+      // Update page info
+      const pageInfo = document.getElementById('summaryPageInfo');
+      if (pageInfo) {
+        const start = (checkoutSummaryState.currentPage - 1) * checkoutSummaryState.itemsPerPage + 1;
+        const end = Math.min(start + checkoutSummaryState.itemsPerPage - 1, checkoutSummaryState.totalItems);
+        pageInfo.textContent = `Showing ${start}-${end} of ${checkoutSummaryState.totalItems} items`;
+      }
+
+      // Update button states
+      const prevBtn = document.getElementById('summaryPrevPage');
+      const nextBtn = document.getElementById('summaryNextPage');
+      if (prevBtn) prevBtn.disabled = checkoutSummaryState.currentPage === 1;
+      if (nextBtn) nextBtn.disabled = checkoutSummaryState.currentPage === totalPages;
+    } else {
+      paginationDiv.style.display = 'none';
+    }
+  }
+
+  // Navigate checkout summary pages
+  function goToCheckoutPage(page) {
+    checkoutSummaryState.currentPage = page;
+    renderCheckoutItems();
   }
 
   function validateCheckoutForm(form) {
@@ -303,6 +408,35 @@
         document.querySelectorAll('input, textarea').forEach(field => {
           field.addEventListener('input', () => clearFieldError(field));
         });
+
+        // Setup Pagination Controls
+        const prevBtn = document.getElementById('summaryPrevPage');
+        const nextBtn = document.getElementById('summaryNextPage');
+
+        if (prevBtn) {
+          prevBtn.addEventListener('click', () => {
+            if (checkoutSummaryState.currentPage > 1) {
+              goToCheckoutPage(checkoutSummaryState.currentPage - 1);
+            }
+          });
+        }
+
+        if (nextBtn) {
+          nextBtn.addEventListener('click', () => {
+            const totalPages = Math.ceil(checkoutSummaryState.totalItems / checkoutSummaryState.itemsPerPage);
+            if (checkoutSummaryState.currentPage < totalPages) {
+              goToCheckoutPage(checkoutSummaryState.currentPage + 1);
+            }
+          });
+        }
+
+        // Subscribe to cart changes to re-render items
+        if (window.cart && typeof window.cart.subscribe === 'function') {
+          window.cart.subscribe(() => {
+            checkoutSummaryState.currentPage = 1; // Reset to first page when cart changes
+            renderCheckoutItems();
+          });
+        }
 
       } else {
         console.log('[Checkout] Waiting for window.cart...');

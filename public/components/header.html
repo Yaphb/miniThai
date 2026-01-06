@@ -15,11 +15,55 @@
 </header>
 
 <script>
-// Header cart badge initialization
+// Header sticky scroll behavior and cart badge initialization
 (function() {
   'use strict';
   
-  console.log('[Header] Component loaded, initializing cart badge...');
+  console.log('[Header] Component loaded, initializing scroll behavior and cart badge...');
+  
+  // ============================================
+  // STICKY HEADER SCROLL BEHAVIOR
+  // ============================================
+  const header = document.querySelector('.site-header');
+  let lastScrollTop = 0;
+  let scrollTimer = null;
+  
+  function handleScroll() {
+    const scrollTop = window.scrollY;
+    
+    if (scrollTop > 100) {
+      // User scrolled down - add scrolled state
+      if (!header.classList.contains('scrolled')) {
+        header.classList.add('scrolled');
+      }
+      
+      // Hide header when scrolling down, show when scrolling up
+      if (scrollTop > lastScrollTop) {
+        // Scrolling DOWN
+        header.classList.add('hidden');
+      } else {
+        // Scrolling UP
+        header.classList.remove('hidden');
+      }
+    } else {
+      // At the top - remove scrolled state
+      header.classList.remove('scrolled', 'hidden');
+    }
+    
+    lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+  }
+  
+  // Throttle scroll events for better performance
+  window.addEventListener('scroll', () => {
+    if (scrollTimer) {
+      clearTimeout(scrollTimer);
+    }
+    scrollTimer = setTimeout(handleScroll, 10);
+  }, { passive: true });
+  
+  // ============================================
+  // CART BADGE INITIALIZATION
+  // ============================================
   
   // Function to update the badge immediately
   function updateBadgeNow() {

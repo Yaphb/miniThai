@@ -28,10 +28,17 @@
       <div class="cart-container">
         <div class="cart-main">
           <div class="cart-header-controls">
-            <input type="text" id="cartSearch" placeholder="Search cart items..." class="search-input">
-            <button type="button" id="clearCartSearch" class="clear-btn" style="display: none;">
-              <i class="fas fa-times"></i>
-            </button>
+            <div style="display: flex; gap: 1rem; align-items: center; flex: 1;">
+              <div style="flex: 1; position: relative;" class="search-container">
+                <input type="text" id="cartSearch" placeholder="Search cart items..." class="search-input">
+                <button type="button" id="clearCartSearch" class="clear-btn-embedded" style="display: none;" aria-label="Clear search">
+                  <i class="fas fa-times"></i>
+                </button>
+              </div>
+              <button type="button" id="clearCartBtn" class="btn btn-danger" title="Clear entire cart" style="padding: 0.5rem 1rem; font-size: 0.9rem; white-space: nowrap;">
+                <i class="fas fa-trash-alt"></i> Clear Cart
+              </button>
+            </div>
           </div>
           <div id="cartItems" class="cart-items">
             <!-- Cart items will be dynamically inserted here -->
@@ -61,10 +68,6 @@
             <div class="summary-row">
               <span>Subtotal</span>
               <span id="subtotal">RM0.00</span>
-            </div>
-            <div class="summary-row">
-              <span>Delivery</span>
-              <span id="deliveryFee">Free</span>
             </div>
           </div>
           <div class="summary-section">

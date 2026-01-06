@@ -160,6 +160,11 @@ function attachCartItemListeners() {
       const item = cartState.allItems.find(i => i.id === itemId);
       if (item && item.quantity > 1) {
         cart.updateQuantity(itemId, item.quantity - 1);
+      } else if (item && item.quantity === 1) {
+        // When quantity is 1 and user clicks decrease, ask for confirmation to remove
+        if (confirm(`Remove ${item.name} from cart?`)) {
+          cart.removeItem(itemId);
+        }
       }
     });
   });
@@ -367,20 +372,12 @@ function initializeCartPagination() {
 // Update cart summary
 function updateCartSummary() {
   const subtotal = cart.getTotal();
-
-  // Get delivery option
-  const deliveryOption = document.querySelector('input[name="delivery"]:checked');
-  const isDelivery = deliveryOption ? deliveryOption.value === 'delivery' : true;
-  const deliveryFee = isDelivery && subtotal > 0 ? 5 : 0;
-
-  const total = subtotal + deliveryFee;
+  const total = subtotal;
 
   const subtotalEl = document.getElementById('subtotal');
-  const deliveryFeeEl = document.getElementById('deliveryFee');
   const totalEl = document.getElementById('total');
 
   if (subtotalEl) subtotalEl.textContent = localFormatPrice(subtotal);
-  if (deliveryFeeEl) deliveryFeeEl.textContent = deliveryFee > 0 ? localFormatPrice(deliveryFee) : 'Free';
   if (totalEl) totalEl.textContent = localFormatPrice(total);
 }
 
@@ -398,14 +395,46 @@ function initCartPage() {
     renderCartItems();
     updateCartSummary();
   });
+}
 
-  // Handle delivery option changes
-  const deliveryOptions = document.querySelectorAll('input[name="delivery"]');
-  deliveryOptions.forEach(option => {
-    option.addEventListener('change', updateCartSummary);
-  });
+// Clear entire cart with confirmation
+function clearEntireCart() {
+  if (cartState.allItems.length === 0) {
+    alert('Your cart is already empty.');
+    return;
+  }
 
+  // Create confirmation dialog
+  const confirmed = confirm(
+    `Are you sure you want to clear your entire cart? This will remove ${cartState.allItems.length} item(s) and cannot be undone.`
+  );
 
+  if (confirmed) {
+    // Clear the cart
+    if (typeof cart !== 'undefined' && typeof cart.clear === 'function') {
+      cart.clear();
+      console.log('[Cart] Cart cleared');
+      
+      // Update the display
+      initCartPage();
+      
+      // Show success message
+      const status = document.getElementById('status');
+      if (status) {
+        status.innerHTML = `
+          <i class="fas fa-check-circle"></i>
+          Cart cleared successfully!
+        `;
+        status.className = 'status show success';
+        setTimeout(() => {
+          status.className = 'status';
+        }, 3000);
+      }
+    } else {
+      console.warn('[Cart] Cart.clear() method not available');
+      alert('Unable to clear cart. Please try again.');
+    }
+  }
 }
 
 // Initialize when DOM is loaded
@@ -418,6 +447,13 @@ function initializeCart() {
 
   // Initialize the page
   initCartPage();
+
+  // Setup clear cart button
+  const clearCartBtn = document.getElementById('clearCartBtn');
+  if (clearCartBtn) {
+    clearCartBtn.addEventListener('click', clearEntireCart);
+    console.log('[Cart] Clear cart button initialized');
+  }
 
   // Update cart badge
   if (typeof updateCartBadge === 'function') {
@@ -445,3 +481,4 @@ if (document.readyState === 'loading') {
 // Make functions globally available
 window.goToCartPage = goToCartPage;
 window.clearCartSearch = clearCartSearch;
+window.clearEntireCart = clearEntireCart;

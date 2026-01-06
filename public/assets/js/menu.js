@@ -445,19 +445,56 @@ function renderCurrentPage() {
   document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.preventDefault()
+      e.stopPropagation()
       addToCart(btn.dataset)
+    })
+  })
+
+  // Attach card click listeners for modal
+  document.querySelectorAll('.menu-grid .card').forEach(card => {
+    card.addEventListener('click', (e) => {
+      if (e.target.closest('.add-to-cart-btn')) return // Don't open modal if clicking add to cart
+      const itemData = card.getAttribute('data-item')
+      if (itemData) {
+        try {
+          const item = JSON.parse(itemData)
+          openItemDetailsModal(item)
+        } catch (err) {
+          console.error('Error parsing item data:', err)
+        }
+      }
+    })
+    card.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault()
+        const itemData = card.getAttribute('data-item')
+        if (itemData) {
+          try {
+            const item = JSON.parse(itemData)
+            openItemDetailsModal(item)
+          } catch (err) {
+            console.error('Error parsing item data:', err)
+          }
+        }
+      }
     })
   })
 
   updatePaginationControls()
 }
 
+// Truncate description to a reasonable length for card display
+function truncateDescription(text, maxLength = 80) {
+  if (!text) return ''
+  if (text.length <= maxLength) return text
+  return text.substring(0, maxLength) + '...'
+}
+
 // Create enhanced menu card (grid view only)
 function createEnhancedMenuCard(item) {
   try {
-    const vegetarianBadge = item.vegetarian ? '🌿 Vegetarian' : ''
-    const spiceLevel = '🌶️'.repeat(item.spicyLevel)
     const emoji = getItemEmoji(item.name)
+    const fullDescription = item.description_en || item.description || ''
     
     // Ensure proper image path
     let imagePath = item.image
@@ -465,33 +502,41 @@ function createEnhancedMenuCard(item) {
       imagePath = '/' + imagePath
     }
 
+    // Encode item data for modal
+    const itemDataJson = JSON.stringify({
+      id: item.id,
+      name: item.name,
+      description: fullDescription,
+      price: item.price,
+      image: imagePath,
+      vegetarian: item.vegetarian,
+      spicyLevel: item.spicyLevel,
+      category: item.category
+    }).replace(/"/g, '&quot;')
+
     // Only grid view (list view removed)
     return `
-      <div class="card fade-in">
-        <div style="height: 200px; background: linear-gradient(135deg, var(--accent-light), #f5f5f5); overflow: hidden; display: flex; align-items: center; justify-content: center;">
-          <img src="${imagePath}" alt="${item.name}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.fontSize='3rem'; this.style.display='flex'; this.style.alignItems='center'; this.style.justifyContent='center'; this.textContent='${emoji}';">
-        </div>
-        <div class="content">
-          <h3>${item.name}</h3>
-          <p>${item.description_en || item.description || ''}</p>
-          
-          <div style="display: flex; gap: 0.5rem; margin-bottom: 0.75rem; flex-wrap: wrap;">
-            ${item.vegetarian ? `<span style="font-size: 0.8rem; background: var(--accent-light); color: var(--text); padding: 0.25rem 0.5rem; border-radius: var(--radius-sm);">${vegetarianBadge}</span>` : ''}
-            ${spiceLevel ? `<span style="font-size: 0.8rem; background: rgba(229, 57, 53, 0.1); color: var(--error); padding: 0.25rem 0.5rem; border-radius: var(--radius-sm);">${spiceLevel}</span>` : ''}
+      <div class="card-wrapper">
+        <div class="card fade-in" role="button" tabindex="0" data-item='${itemDataJson}' style="cursor: pointer; display: flex; flex-direction: column; height: 100%;" title="Click to view details">
+          <div style="height: 160px; background: linear-gradient(135deg, var(--accent-light), #f5f5f5); overflow: hidden; display: flex; align-items: center; justify-content: center;">
+            <img src="${imagePath}" alt="${item.name}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.fontSize='3rem'; this.style.display='flex'; this.style.alignItems='center'; this.style.justifyContent='center'; this.textContent='${emoji}';">
           </div>
-
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: auto; padding-top: var(--space-3); border-top: 1px solid var(--border-light);">
-            <p style="font-weight: 600; color: var(--accent); margin: 0;">${localFormatPrice(item.price)}</p>
-            <button 
-              class="btn add-to-cart-btn" 
-              style="padding: 0.5rem 1rem; font-size: 0.85rem;"
-              data-id="${item.id}"
-              data-name="${item.name}"
-              data-price="${item.price}"
-              data-image="${item.image}"
-              aria-label="Add ${item.name} to cart">
-              + Add to Cart
-            </button>
+          <div class="content" style="padding: var(--space-2) var(--space-3); display: flex; flex-direction: column; flex-grow: 1;">
+            <h3 style="margin: 0 0 var(--space-2) 0; font-size: 1rem;">${item.name}</h3>
+            
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: auto; gap: var(--space-2);">
+              <p style="font-weight: 600; color: var(--accent); margin: 0; font-size: 1rem;">${localFormatPrice(item.price)}</p>
+              <button 
+                class="btn add-to-cart-btn" 
+                style="padding: 0.4rem 0.8rem; font-size: 0.75rem; white-space: nowrap;"
+                data-id="${item.id}"
+                data-name="${item.name}"
+                data-price="${item.price}"
+                data-image="${item.image}"
+                aria-label="Add ${item.name} to cart">
+                + Add
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -669,6 +714,112 @@ function createStatusElement() {
   el.className = 'status'
   document.body.appendChild(el)
   return el
+}
+
+// Initialize modal overlay if it doesn't exist
+function initializeModalOverlay() {
+  if (document.getElementById('itemDetailsModal')) return
+  
+  const modal = document.createElement('div')
+  modal.id = 'itemDetailsModal'
+  modal.className = 'modal-overlay'
+  modal.innerHTML = `
+    <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <button class="modal-close" aria-label="Close details">&times;</button>
+      <div class="modal-body">
+        <div class="modal-image-container">
+          <img id="modalImage" src="" alt="" style="width: 100%; height: 100%; object-fit: cover; border-radius: var(--radius-lg);">
+        </div>
+        <div class="modal-info">
+          <h2 id="modalTitle" style="margin-bottom: var(--space-3);">Item Name</h2>
+          <p id="modalDescription" style="margin-bottom: var(--space-3); line-height: 1.7; color: var(--text-light);">Description</p>
+          <div id="modalTags" style="display: flex; gap: 0.5rem; margin-bottom: 1.5rem; flex-wrap: wrap;"></div>
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <p id="modalPrice" style="font-weight: 600; font-size: 1.25rem; color: var(--accent); margin: 0;"></p>
+            <button id="modalAddToCart" class="btn" style="padding: 0.75rem 1.5rem; font-size: 1rem;">+ Add to Cart</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `
+  document.body.appendChild(modal)
+  
+  // Setup modal close handlers
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) closeItemDetailsModal()
+  })
+  
+  const closeBtn = modal.querySelector('.modal-close')
+  if (closeBtn) {
+    closeBtn.addEventListener('click', closeItemDetailsModal)
+  }
+  
+  // Close on Escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal.classList.contains('active')) {
+      closeItemDetailsModal()
+    }
+  })
+}
+
+// Open item details modal
+function openItemDetailsModal(item) {
+  initializeModalOverlay()
+  
+  const modal = document.getElementById('itemDetailsModal')
+  const titleEl = document.getElementById('modalTitle')
+  const descEl = document.getElementById('modalDescription')
+  const imageEl = document.getElementById('modalImage')
+  const priceEl = document.getElementById('modalPrice')
+  const tagsEl = document.getElementById('modalTags')
+  const addBtn = document.getElementById('modalAddToCart')
+  
+  // Set content
+  titleEl.textContent = item.name
+  descEl.textContent = item.description
+  imageEl.src = item.image
+  imageEl.alt = item.name
+  priceEl.textContent = localFormatPrice(item.price)
+  
+  // Set tags
+  const tags = []
+  if (item.vegetarian) {
+    tags.push(`<span style="font-size: 0.85rem; background: var(--accent-light); color: var(--text); padding: 0.35rem 0.75rem; border-radius: var(--radius-sm);">🌿 Vegetarian</span>`)
+  }
+  if (item.spicyLevel > 0) {
+    const spiceLevel = '🌶️'.repeat(item.spicyLevel)
+    tags.push(`<span style="font-size: 0.85rem; background: rgba(229, 57, 53, 0.1); color: var(--error); padding: 0.35rem 0.75rem; border-radius: var(--radius-sm);">${spiceLevel}</span>`)
+  }
+  if (item.category) {
+    tags.push(`<span style="font-size: 0.85rem; background: var(--border-light); color: var(--text); padding: 0.35rem 0.75rem; border-radius: var(--radius-sm);">${item.category}</span>`)
+  }
+  tagsEl.innerHTML = tags.join('')
+  
+  // Setup add to cart button
+  addBtn.onclick = (e) => {
+    e.stopPropagation()
+    const itemData = {
+      id: item.id,
+      name: item.name,
+      price: item.price,
+      image: item.image
+    }
+    addToCart(itemData)
+    closeItemDetailsModal()
+  }
+  
+  // Show modal
+  modal.classList.add('active')
+  document.body.style.overflow = 'hidden'
+}
+
+// Close item details modal
+function closeItemDetailsModal() {
+  const modal = document.getElementById('itemDetailsModal')
+  if (modal) {
+    modal.classList.remove('active')
+  }
+  document.body.style.overflow = 'auto'
 }
 
 console.log('[Menu] Enhanced script file loaded, registering DOM listeners')

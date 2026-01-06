@@ -1,198 +1,204 @@
 @echo off
-:: ============================================
-:: miniThai Setup - First Time Installation
-:: ============================================
-:: This script performs initial setup including:
-:: - Node.js and npm verification
-:: - Dependency installation
-:: - Environment configuration
-:: - Project structure validation
-
 setlocal enabledelayedexpansion
 set "SCRIPT_DIR=%~dp0"
 cd /d "%SCRIPT_DIR%"
 
-:: Set color variables
-set "COLOR_RED=<NUL set /p=!ESC![91m"
-set "COLOR_GREEN=<NUL set /p=!ESC![92m"
-set "COLOR_YELLOW=<NUL set /p=!ESC![93m"
-set "COLOR_RESET=<NUL set /p=!ESC![0m"
-set "ESC=<NUL set /p=!ESC!["
+:: Enable ANSI colors support
+reg add HKCU\Console /v VirtualTerminalLevel /t REG_DWORD /d 0x1 /f >nul 2>&1
 
-:: Enable color support if available
-<nul >&1 (echo 2>nul) && (
-    <nul >&1 (echo 2>nul) && (
-        echo [1/7] Enabling ANSI color support...
-        reg add HKCU\Console /v VirtualTerminalLevel /t REG_DWORD /d 0x1 /f >nul 2>&1
-    )
-)
+:: Create escape character using PowerShell
+for /f %%A in ('powershell -Command "[char]27"') do set "ESC=%%A"
+
+:: Define ANSI color codes
+set "GREEN=!ESC![92m"
+set "YELLOW=!ESC![93m"
+set "RED=!ESC![91m"
+set "RESET=!ESC![0m"
 
 echo.
 echo ========================================
-echo  %COLOR_GREEN%miniThai - Setup & Installation%COLOR_RESET%
+echo %GREEN%miniThai Setup Wizard%RESET%
 echo ========================================
 echo.
 
 :: Check if running as administrator
-echo [1/7] Checking privileges...
+echo %GREEN%[OK]%RESET% Checking privileges...
 net session >nul 2>&1
 if %errorlevel% == 0 (
-    echo %COLOR_YELLOW%Running with administrator privileges%COLOR_RESET%
+    echo   Administrator privileges detected
     set "IS_ADMIN=1"
 ) else (
-    echo Running with standard user privileges
+    echo   Standard user privileges
     set "IS_ADMIN=0"
 )
 
 :: Check if Node.js is installed
 echo.
-echo [2/7] Checking Node.js installation...
+echo %GREEN%[OK]%RESET% Checking Node.js...
 where node >nul 2>&1
 if errorlevel 1 (
-    echo %COLOR_RED%ERROR: Node.js is not installed or not in PATH%COLOR_RESET%
-    echo Please install Node.js LTS from: https://nodejs.org/
-    echo Recommended version: 18.x LTS or later
+    echo.
+    echo %RED%[FAIL]%RESET% Node.js not found
+    echo   Please install Node.js from: https://nodejs.org/ ^(version 16+^)
+    echo.
     pause
     exit /b 1
 )
 
-echo Node.js version: %COLOR_GREEN%!node -v!%COLOR_RESET%
+for /f "tokens=*" %%a in ('node -v') do set "NODE_VERSION=%%a"
+echo   Found: %NODE_VERSION%
 
 :: Check if npm is installed
 echo.
-echo [3/7] Checking npm installation...
+echo %GREEN%[OK]%RESET% Checking npm...
 where npm >nul 2>&1
 if errorlevel 1 (
-    echo %COLOR_RED%ERROR: npm is not installed%COLOR_RESET%
+    echo %RED%[FAIL]%RESET% npm not found
+    echo.
     pause
     exit /b 1
 )
 
-echo npm version: %COLOR_GREEN%!npm -v!%COLOR_RESET%
+for /f "tokens=*" %%a in ('npm -v') do set "NPM_VERSION=%%a"
+echo   Found: npm %NPM_VERSION%
 
-:: Check Node.js version
-for /f "tokens=1 delims=." %%a in ('node -v') do set "NODE_MAJOR=%%a"
-set "NODE_MAJOR=!NODE_MAJOR:~1!"
+:: Prepare and install dependencies
+echo.
+echo %GREEN%[OK]%RESET% Preparing installation...
 
-if !NODE_MAJOR! LSS 16 (
-    echo %COLOR_RED%WARNING: Node.js version !node -v! is not supported%COLOR_RESET%
-    echo Recommended: Node.js 16.x or later
+set "NEEDS_REINSTALL=0"
+
+:: Check if node_modules exists with package-lock.json
+if exist node_modules (
+    if exist package-lock.json (
+        echo   Existing dependencies found
+        echo   Verifying consistency with package-lock.json...
+        call npm ci --no-fund --no-audit >nul 2>&1
+        if errorlevel 1 (
+            echo   Dependencies out of sync, reinstalling...
+            set "NEEDS_REINSTALL=1"
+        ) else (
+            echo   Dependencies are up-to-date
+        )
+    ) else (
+        echo   Dependencies found but package-lock.json missing
+        set "NEEDS_REINSTALL=1"
+    )
+) else (
+    echo   No existing dependencies found
+    set "NEEDS_REINSTALL=1"
+)
+
+if !NEEDS_REINSTALL! equ 1 (
     echo.
-    set /p "CONTINUE=Continue anyway? (y/N) "
-    if /i not "!CONTINUE!"=="y" (
+    echo %GREEN%[OK]%RESET% Installing dependencies...
+    if exist node_modules (
+        echo   Removing old installation...
+        rmdir /s /q node_modules >nul 2>&1
+    )
+    if exist package-lock.json (
+        del /q package-lock.json >nul 2>&1
+    )
+    call npm install --no-fund --no-audit
+    if errorlevel 1 (
+        echo.
+        echo %RED%[FAIL]%RESET% Installation failed
+        echo   Check your internet connection and try again
+        echo.
+        pause
         exit /b 1
     )
+    echo   %GREEN%Dependencies installed successfully%RESET%
+) else (
+    echo   %GREEN%Dependencies already up-to-date%RESET%
 )
-
-:: Clean previous installation
-echo.
-echo [4/7] Preparing installation...
-if exist node_modules (
-    echo Removing existing node_modules...
-    rmdir /s /q node_modules 2>nul
-)
-
-:: Install dependencies
-echo.
-echo [5/7] Installing dependencies...
-call npm install --no-fund --no-audit
-if errorlevel 1 (
-    echo %COLOR_RED%ERROR: Failed to install dependencies%COLOR_RESET%
-    echo Please check your internet connection and try again
-    pause
-    exit /b 1
-)
-
-echo %COLOR_GREEN%Dependencies installed successfully%COLOR_RESET%
 
 :: Configure environment
 echo.
-echo [6/7] Configuring environment...
+echo %GREEN%[OK]%RESET% Configuring environment...
 if not exist .env (
     if exist .env.example (
-        echo Creating .env from .env.example...
+        echo   Creating .env file...
         copy /y .env.example .env >nul
         if errorlevel 1 (
-            echo %COLOR_RED%ERROR: Failed to create .env file%COLOR_RESET%
+            echo %YELLOW%   Warning: Could not copy .env.example%RESET%
         ) else (
-            echo %COLOR_GREEN%Environment file created%COLOR_RESET%
+            echo   %GREEN%.env created successfully%RESET%
         )
     ) else (
-        echo %COLOR_YELLOW%WARNING: .env.example not found. Creating basic .env...%COLOR_RESET%
+        echo   Creating basic .env file...
         (
-            echo # MiniThai Environment Configuration
+            echo # MiniThai Configuration
             echo NODE_ENV=development
             echo PORT=3000
             echo MONGODB_URI=mongodb://localhost:27017/minithai
             echo SESSION_SECRET=your-secret-key-here
-            echo CORS_ORIGIN=http://localhost:3000
         ) > .env
         if errorlevel 1 (
-            echo %COLOR_RED%ERROR: Failed to create .env file%COLOR_RESET%
+            echo %YELLOW%   Warning: Could not create .env%RESET%
         ) else (
-            echo %COLOR_GREEN%Basic environment file created%COLOR_RESET%
+            echo   %GREEN%.env created successfully%RESET%
         )
     )
 ) else (
-    echo %COLOR_YELLOW%.env already exists, skipping creation%COLOR_RESET%
+    echo   .env already exists
 )
 
 :: Verify project structure
 echo.
-echo [7/7] Verifying project structure...
+echo %GREEN%[OK]%RESET% Verifying project...
 set "MISSING_FILES=0"
 
 if not exist package.json (
-    echo %COLOR_RED%ERROR: package.json not found%COLOR_RESET%
+    echo %RED%   [FAIL]%RESET% package.json not found
     set /a MISSING_FILES+=1
 )
 
-if not exist server/index.js (
-    echo %COLOR_RED%ERROR: server/index.js not found%COLOR_RESET%
+if not exist server\index.js (
+    echo %RED%   [FAIL]%RESET% server/index.js not found
     set /a MISSING_FILES+=1
 )
 
 if not exist public (
-    echo %COLOR_RED%ERROR: public directory not found%COLOR_RESET%
+    echo %RED%   [FAIL]%RESET% public directory not found
     set /a MISSING_FILES+=1
 )
 
 if !MISSING_FILES! gtr 0 (
     echo.
-    echo %COLOR_RED%ERROR: Project structure verification failed with !MISSING_FILES! error(s)%COLOR_RESET%
+    echo %RED%[FAIL]%RESET% Project verification failed
+    echo.
     pause
     exit /b 1
 )
 
-echo %COLOR_GREEN%Project structure verified%COLOR_RESET%
+echo   All checks passed!
 
-:: Installation complete
+:: Setup complete
 echo.
 echo ========================================
-echo  %COLOR_GREEN%Setup Complete!%COLOR_RESET%
+echo %GREEN%Setup Complete!%RESET%
 echo ========================================
 echo.
-echo %COLOR_GREEN%miniThai has been successfully set up!%COLOR_RESET%
+echo %GREEN%miniThai is ready to use.%RESET%
 echo.
 echo Next steps:
-echo 1. Edit the .env file to configure your environment
+echo   1. Edit .env to configure your environment
 if "%IS_ADMIN%"=="1" (
-    echo 2. Run %COLOR_YELLOW%startup_minithai.bat%COLOR_RESET% (recommended for daily use)
+    echo   2. Run: startup_minithai.bat
 ) else (
-    echo 2. Run %COLOR_YELLOW%npm start%COLOR_RESET% to start the server
+    echo   2. Run: npm start
 )
-echo 3. Open %COLOR_YELLOW%http://localhost:3000%COLOR_RESET% in your browser
+echo   3. Open: http://localhost:3000
 echo.
-echo For development, use: %COLOR_YELLOW%npm run dev%COLOR_RESET%
+echo For development: npm run dev
 echo.
-
-:: Start the server if running as admin
 if "%IS_ADMIN%"=="1" (
-    echo Starting the server...
+    timeout /t 3 /nobreak
     call startup_minithai.bat
 ) else (
-    echo %COLOR_YELLOW%Note: Run as administrator to enable automatic startup%COLOR_RESET%
-    pause
+    echo %YELLOW%Press any key to close this window...%RESET%
+    pause >nul
 )
 
 endlocal

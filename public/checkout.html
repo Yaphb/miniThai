@@ -9,40 +9,156 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="/assets/css/main.css">
     <style>
-        /* Inline styles for checkout specifics */
+        /* Order Summary Section Enhancement */
+        .order-summary-section {
+            background: #f9f9f9;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .order-summary-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #d4af37;
+        }
+
+        .order-summary-header h2 {
+            margin: 0;
+            color: #333;
+            font-size: 1.5rem;
+            flex: 1;
+        }
+
+        .order-summary-badge {
+            background: #d4af37;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+
         .checkout-items {
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
+            min-height: 150px;
         }
 
         .checkout-item {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem 0;
-            border-bottom: 1px solid #eee;
+            gap: 1rem;
+            align-items: flex-start;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            background: white;
+            border-radius: 6px;
+            border: 1px solid #eee;
+            transition: box-shadow 0.3s ease;
         }
 
-        .checkout-item:last-child {
-            border-bottom: none;
+        .checkout-item:hover {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .checkout-item-image {
+            width: 80px;
+            height: 80px;
+            flex-shrink: 0;
+            border-radius: 6px;
+            background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .checkout-item-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .checkout-item-image .fallback-emoji {
+            font-size: 2.5rem;
+        }
+
+        .item-emoji {
+            width: 100%;
+            height: 100%;
+            font-size: 2.5rem;
         }
 
         .checkout-item-details {
             flex: 1;
-            padding-right: 1rem;
+            min-width: 0;
         }
 
         .checkout-item-details strong {
             display: block;
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+            color: #333;
+        }
+
+        .checkout-item-details small {
+            display: block;
+            color: #666;
             margin-bottom: 0.25rem;
         }
 
         .checkout-item-price {
             font-weight: bold;
+            color: #d4af37;
+            font-size: 1.1rem;
+        }
+
+        /* Pagination for Order Summary */
+        .checkout-pagination {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            padding: 1rem 0;
+            border-top: 1px solid #eee;
+        }
+
+        .checkout-pagination-info {
+            font-size: 0.9rem;
+            color: #666;
+            margin: 0 1rem;
+        }
+
+        .checkout-pagination-btn {
+            background: #f0f0f0;
+            border: 1px solid #ddd;
+            padding: 0.5rem 0.75rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .checkout-pagination-btn:hover:not(:disabled) {
+            background: #d4af37;
+            color: white;
+            border-color: #d4af37;
+        }
+
+        .checkout-pagination-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
 
         .error-message {
             text-align: center;
             padding: 2rem;
+        }
+
+        .empty-order {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
         }
     </style>
 </head>
@@ -65,10 +181,27 @@
             <div class="cart-container">
                 <!-- Order Summary (Read Only) -->
                 <div class="cart-main">
-                    <h2>Order Summary</h2>
-                    <div id="checkoutOrderItems" class="checkout-items">
-                        <!-- Items will be populated by JS -->
-                        <p>Loading cart items...</p>
+                    <div class="order-summary-section">
+                        <div class="order-summary-header">
+                            <h2>Order Summary</h2>
+                            <span class="order-summary-badge" id="summaryItemCount">0 Items</span>
+                        </div>
+                        <div id="checkoutOrderItems" class="checkout-items">
+                            <!-- Items will be populated by JS -->
+                            <div class="empty-order">Loading cart items...</div>
+                        </div>
+                        <!-- Checkout Summary Pagination -->
+                        <div id="checkoutSummaryPagination" class="checkout-pagination" style="display: none;">
+                            <button id="summaryPrevPage" class="checkout-pagination-btn" title="Previous Page">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <div class="checkout-pagination-info">
+                                <span id="summaryPageInfo">Page 1</span>
+                            </div>
+                            <button id="summaryNextPage" class="checkout-pagination-btn" title="Next Page">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
 

@@ -186,15 +186,23 @@ body {
 .site-header {
   position: sticky;
   top: 0;
-  background: rgba(250, 250, 248, 0.95);
-  border-bottom: 1px solid var(--border);
+  background: rgba(250, 250, 248, 0.85);
+  border-bottom: 1px solid rgba(229, 229, 224, 0.4);
   z-index: 100;
-  backdrop-filter: blur(10px);
-  transition: var(--transition);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
+  transform: translateY(0);
 }
 
 .site-header.scrolled {
-  box-shadow: var(--shadow-md);
+  background: rgba(250, 250, 248, 0.9);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  border-bottom-color: rgba(229, 229, 224, 0.6);
+}
+
+.site-header.hidden {
+  transform: translateY(-100%);
 }
 
 .site-header .container {
@@ -470,6 +478,16 @@ body {
   width: 100%;
 }
 
+.btn-danger {
+  background: var(--error);
+  color: #fff;
+}
+
+.btn-danger:hover {
+  background: #d32f2f;
+  box-shadow: 0 4px 12px rgba(229, 57, 53, 0.3);
+}
+
 /* ============================================
    CARD COMPONENT (REUSABLE)
    ============================================ */
@@ -487,24 +505,34 @@ body {
   transform: translateY(-4px);
 }
 
+.card-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.card {
+  flex: 1;
+}
+
 .card img {
   width: 100%;
-  height: 200px;
+  height: 160px;
   object-fit: cover;
   display: block;
 }
 
 .card .content {
-  padding: var(--space-3);
+  padding: var(--space-2) var(--space-3) var(--space-3);
 }
 
 .card h3 {
-  margin-bottom: var(--space-2);
-  font-size: 1.125rem;
+  margin-bottom: var(--space-1);
+  font-size: 1rem;
 }
 
 .card p {
-  font-size: 0.95rem;
+  font-size: 0.85rem;
   margin-bottom: 0;
 }
 
@@ -986,6 +1014,32 @@ select.error:focus {
   transform: scale(1.1);
 }
 
+.clear-btn-embedded {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--text-light);
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 50%;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  font-size: 0.9rem;
+}
+
+.clear-btn-embedded:hover {
+  background: rgba(212, 132, 92, 0.1);
+  color: var(--accent);
+  transform: translateY(-50%) scale(1.15);
+}
+
 .filter-actions {
   display: flex;
   align-items: end;
@@ -1388,6 +1442,10 @@ select.error:focus {
   font-size: 0.95rem;
   transition: var(--transition);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.search-container {
+  position: relative !important;
 }
 
 .cart-header-controls .search-input:focus {
@@ -2394,6 +2452,134 @@ select.error:focus {
 
   .highlight-item {
     padding: var(--space-3);
+  }
+}
+
+
+/* ============================================
+   MODAL & OVERLAY STYLES (GLASSMORPHISM)
+   ============================================ */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-3);
+}
+
+.modal-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.modal-content {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  max-width: 700px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: modalSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.modal-close {
+  position: absolute;
+  top: var(--space-3);
+  right: var(--space-3);
+  background: transparent;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  color: var(--text);
+  transition: var(--transition);
+  padding: 0;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  z-index: 10;
+}
+
+.modal-close:hover {
+  background: rgba(0, 0, 0, 0.05);
+  transform: rotate(90deg);
+}
+
+.modal-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-5);
+  padding: var(--space-5);
+}
+
+.modal-image-container {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--border-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.modal-info h2 {
+  color: var(--text);
+  font-size: 1.75rem;
+  margin-bottom: var(--space-3);
+  margin-top: 0;
+}
+
+.modal-info p {
+  color: var(--text-light);
+  line-height: 1.8;
+  font-size: 1rem;
+}
+
+/* Responsive modal for mobile */
+@media (max-width: 768px) {
+  .modal-body {
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
+    padding: var(--space-4);
+  }
+
+  .modal-image-container {
+    aspect-ratio: 16 / 9;
+  }
+
+  .modal-content {
+    max-height: 95vh;
   }
 }
 
